@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="photo" />
+    <textarea name="questions"></textarea>
+    <textarea name="answers"></textarea>
+    <button type="submit" formaction="excel">Download Excel</button>
+    {% if has_google %}
+    <button type="submit" formaction="google">Save to Google Sheets</button>
+  </form>
+  {% else %}
+  </form>
+  <a href="/googleLogin">Login to access Google Sheets</a>
+    {% endif %}
+</body>
+
+</html>

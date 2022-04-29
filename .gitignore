@@ -1,0 +1,4 @@
+__pycache__/
+env/
+client_secret.json
+flask_session/
