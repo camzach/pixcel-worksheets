@@ -1,3 +1,4 @@
+import json
 from save_excel import makeExcel
 from save_google import google as saveGoogle
 from flask import Flask, redirect, render_template, request, send_file, session, url_for
@@ -27,8 +28,8 @@ from google.auth.transport import requests
 
 @app.get('/googleLogin')
 def googleLogin():
-    flow = Flow.from_client_secrets_file(
-        'client_secret.json',
+    flow = Flow.from_client_config(
+        json.loads(os.environ.get('GOOGLE_CREDS')),
         ['https://www.googleapis.com/auth/spreadsheets']
     )
     flow.redirect_uri = url_for('googleCallback')
@@ -40,7 +41,7 @@ def googleLogin():
 @app.get('/googleCallback')
 def googleCallback():
     flow = Flow.from_client_secrets_file(
-        'client_secret.json',
+        json.loads(os.environ.get('GOOGLE_CREDS')),
         ['https://www.googleapis.com/auth/spreadsheets']
     )
     flow.redirect_uri = url_for('googleCallback')
