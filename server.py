@@ -5,6 +5,9 @@ from flask import Flask, redirect, render_template, request, send_file, session,
 from flask_session import Session
 from PIL import Image
 import os
+from urllib.parse import urljoin
+from google_auth_oauthlib.flow import Flow
+import datetime
 
 app = Flask(__name__)
 SESSION_TYPE = "filesystem"
@@ -22,15 +25,13 @@ def sendExcel():
     excelfile = makeExcel(image, questions, answers)
     return send_file(excelfile, download_name='worksheet.xlsx', as_attachment=True)
 
-from google_auth_oauthlib.flow import Flow
-
 @app.get('/googleLogin')
 def googleLogin():
     flow = Flow.from_client_config(
         json.loads(os.environ.get('GOOGLE_CREDS')),
         ['https://www.googleapis.com/auth/spreadsheets']
     )
-    flow.redirect_uri = os.path.join(request.host_url, 'googleCallback')
+    flow.redirect_uri = urljoin(request.host_url, 'googleCallback')
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true')
@@ -42,7 +43,7 @@ def googleCallback():
         json.loads(os.environ.get('GOOGLE_CREDS')),
         ['https://www.googleapis.com/auth/spreadsheets']
     )
-    flow.redirect_uri = os.path.join(request.host_url, 'googleCallback')
+    flow.redirect_uri = urljoin(request.host_url, 'googleCallback')
     flow.fetch_token(authorization_response=request.url)
     session['credentials'] = {
         'token': flow.credentials.token,
@@ -67,8 +68,6 @@ def google():
     answers = [a.strip() for a in request.form.get('answers').split('\n')]
     saveGoogle(creds, 'Mogus', image, questions, answers)
     return 'done :)'
-
-import datetime
 
 @app.get('/')
 def root():
