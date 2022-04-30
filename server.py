@@ -45,7 +45,8 @@ def googleLogin():
     flow.redirect_uri = urljoin(request.host_url, 'googleCallback')
     authorization_url, state = flow.authorization_url(
         access_type='offline',
-        include_granted_scopes='true')
+        include_granted_scopes='true',
+        prompt='consent')
     return redirect(authorization_url)
 
 @app.get('/googleCallback')
