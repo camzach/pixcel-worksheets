@@ -23,8 +23,6 @@ def sendExcel():
     return send_file(excelfile, download_name='worksheet.xlsx', as_attachment=True)
 
 from google_auth_oauthlib.flow import Flow
-from google.oauth2 import id_token
-from google.auth.transport import requests
 
 @app.get('/googleLogin')
 def googleLogin():
@@ -32,7 +30,7 @@ def googleLogin():
         json.loads(os.environ.get('GOOGLE_CREDS')),
         ['https://www.googleapis.com/auth/spreadsheets']
     )
-    flow.redirect_uri = url_for('googleCallback')
+    flow.redirect_uri = os.path.join(request.host_url, 'googleCallback')
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true')
@@ -44,7 +42,7 @@ def googleCallback():
         json.loads(os.environ.get('GOOGLE_CREDS')),
         ['https://www.googleapis.com/auth/spreadsheets']
     )
-    flow.redirect_uri = url_for('googleCallback')
+    flow.redirect_uri = os.path.join(request.host_url, 'googleCallback')
     flow.fetch_token(authorization_response=request.url)
     session['credentials'] = {
         'token': flow.credentials.token,
