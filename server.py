@@ -39,7 +39,7 @@ def googleLogin():
 
 @app.get('/googleCallback')
 def googleCallback():
-    flow = Flow.from_client_secrets_file(
+    flow = Flow.from_client_config(
         json.loads(os.environ.get('GOOGLE_CREDS')),
         ['https://www.googleapis.com/auth/spreadsheets']
     )
