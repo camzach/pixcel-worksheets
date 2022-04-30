@@ -17,13 +17,24 @@ app.config.update(SECRET_KEY=os.urandom(24))
 app.config.from_object(__name__)
 Session(app)
 
+def process_args(form):
+    image = Image.open(request.files.get('photo')).convert('RGB')
+    try:
+        height = int(form.get('height'))
+        width = int(form.get('width'))
+        image = image.resize([width, height])
+    except ValueError:
+        pass
+    questions = [q.strip() for q in form.get('questions').strip().split('\n')]
+    answers = [a.strip() for a in form.get('answers').strip().split('\n')]
+    name = form.get('name').strip()
+    return image, questions, answers, name
+
 @app.post('/excel')
 def sendExcel():
-    image = Image.open(request.files.get('photo')).convert('RGB')
-    questions = [q.strip() for q in request.form.get('questions').split('\n')]
-    answers = [a.strip() for a in request.form.get('answers').split('\n')]
+    image, questions, answers, name = process_args(request.form)
     excelfile = makeExcel(image, questions, answers)
-    return send_file(excelfile, download_name='worksheet.xlsx', as_attachment=True)
+    return send_file(excelfile, download_name=f'{name}.xlsx', as_attachment=True)
 
 @app.get('/googleLogin')
 def googleLogin():
@@ -63,10 +74,7 @@ def google():
         del creds['expiry']
     except KeyError:
         return 'no creds'
-    image = Image.open(request.files.get('photo')).convert('RGB')
-    questions = [q.strip() for q in request.form.get('questions').strip().split('\n')]
-    answers = [a.strip() for a in request.form.get('answers').strip().split('\n')]
-    name = request.form.get('name').strip()
+    image, questions, answers, name = process_args(request.form)
     saveGoogle(creds, name, image, questions, answers)
     return 'done :)'
 
