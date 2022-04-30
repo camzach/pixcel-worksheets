@@ -64,9 +64,10 @@ def google():
     except KeyError:
         return 'no creds'
     image = Image.open(request.files.get('photo')).convert('RGB')
-    questions = [q.strip() for q in request.form.get('questions').split('\n')]
-    answers = [a.strip() for a in request.form.get('answers').split('\n')]
-    saveGoogle(creds, 'Mogus', image, questions, answers)
+    questions = [q.strip() for q in request.form.get('questions').strip().split('\n')]
+    answers = [a.strip() for a in request.form.get('answers').strip().split('\n')]
+    name = request.form.get('name').strip()
+    saveGoogle(creds, name, image, questions, answers)
     return 'done :)'
 
 @app.get('/')
