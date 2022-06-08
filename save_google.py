@@ -111,7 +111,7 @@ def google(creds, name, image, questions, answers):
                             'type': 'CUSTOM_FORMULA',
                             'values': [{
                                 'userEnteredValue':
-                                    f'=EQ({coordsToA1(2, qidx+2)}, {answers[qidx]})',
+                                    f'=EQ({coordsToA1(2, qidx+2)}, \"{answers[qidx]}\")',
                             }]
                         },
                         'format': {
@@ -119,6 +119,36 @@ def google(creds, name, image, questions, answers):
                                 'red': r / 255.0,
                                 'green': g / 255.0,
                                 'blue': b / 255.0,
+                            }
+                        }
+                    }
+                },
+                'index': 0
+                }
+            })
+    for i, (q, a) in enumerate(zip(questions, answers)):
+        requests.append({
+                'addConditionalFormatRule': {
+                    'rule': {
+                    'ranges': [{
+                        'sheetId': 0,
+                        'startRowIndex': i + 1,
+                        'endRowIndex': i + 2,
+                        'startColumnIndex': 1,
+                        'endColumnIndex': 2,
+                    }],
+                    'booleanRule': {
+                        'condition': {
+                            'type': 'TEXT_CONTAINS',
+                            'values': [{
+                                "userEnteredValue": a
+                            }]
+                        },
+                        'format': {
+                            'backgroundColor': {
+                                'red': 52/255.0,
+                                'green': 168/255.0,
+                                'blue': 83/255.0,
                             }
                         }
                     }
