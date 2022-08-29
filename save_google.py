@@ -111,7 +111,7 @@ def google(creds, name, image, questions, answers):
                             'type': 'CUSTOM_FORMULA',
                             'values': [{
                                 'userEnteredValue':
-                                    f'=EQ({coordsToA1(2, qidx+2)}, \"{answers[qidx]}\")',
+                                    f'=EQ(TO_TEXT({coordsToA1(2, qidx+2)}), \"{answers[qidx]}\")',
                             }]
                         },
                         'format': {
