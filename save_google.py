@@ -127,35 +127,60 @@ def google(creds, name, image, questions, answers):
                 }
             })
     for i, (q, a) in enumerate(zip(questions, answers)):
-        requests.append({
+        requests.extend([{
                 'addConditionalFormatRule': {
                     'rule': {
-                    'ranges': [{
-                        'sheetId': 0,
-                        'startRowIndex': i + 1,
-                        'endRowIndex': i + 2,
-                        'startColumnIndex': 1,
-                        'endColumnIndex': 2,
-                    }],
-                    'booleanRule': {
-                        'condition': {
-                            'type': 'TEXT_CONTAINS',
-                            'values': [{
-                                "userEnteredValue": a
-                            }]
-                        },
-                        'format': {
-                            'backgroundColor': {
-                                'red': 52/255.0,
-                                'green': 168/255.0,
-                                'blue': 83/255.0,
+                        'ranges': [{
+                            'sheetId': 0,
+                            'startRowIndex': i + 1,
+                            'endRowIndex': i + 2,
+                            'startColumnIndex': 1,
+                            'endColumnIndex': 2,
+                        }],
+                        'booleanRule': {
+                            'condition': {
+                                'type': 'TEXT_CONTAINS',
+                                'values': [{
+                                    "userEnteredValue": a
+                                }]
+                            },
+                            'format': {
+                                'backgroundColor': {
+                                    'red': 186/255.0,
+                                    'green': 240/255.0,
+                                    'blue': 174/255.0,
+                                }
                             }
                         }
-                    }
-                },
+                    },
                 'index': 0
                 }
-            })
+            }, {
+                'addConditionalFormatRule': {
+                    'rule': {
+                        'ranges': [{
+                            'sheetId': 0,
+                            'startRowIndex': i + 1,
+                            'endRowIndex': i + 2,
+                            'startColumnIndex': 1,
+                            'endColumnIndex': 2,
+                        }],
+                        'booleanRule': {
+                            'condition': {
+                                'type': 'NOT_BLANK',
+                            },
+                            'format': {
+                                'backgroundColor': {
+                                    'red': 255/255.0,
+                                    'green': 129/255.0,
+                                    'blue': 129/255.0,
+                                }
+                            }
+                        }
+                    },
+                'index': 1
+                }
+            }])
 
     body = {
         'requests': requests
