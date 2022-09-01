@@ -1,4 +1,28 @@
 async function submitForm() {
+  const submitButton = document.querySelector('#submit-button');
+  submitButton.disabled = true;
+  const originalText = submitButton.innerText;
+  submitButton.innerText = 'Saving to Google Sheets...';
+  try {
+    await doSubmit();
+    setTimeout(() => {
+      submitButton.innerText = 'Done!';
+      setTimeout(() => {
+        submitButton.disabled = false;
+        submitButton.innerText = originalText;
+      }, 1000);
+    }, 2000);
+  } catch (err) {
+    submitButton.innerText = 'Error while saving sheet';
+    setTimeout(() => {
+      submitButton.disabled = false;
+      submitButton.innerText = originalText;
+    }, 1000);
+    console.error(err);
+  }
+}
+
+async function doSubmit() {
   const form = document.querySelector('#form');
   const formData = new FormData(form);
 
