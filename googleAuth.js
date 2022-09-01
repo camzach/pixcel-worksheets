@@ -27,6 +27,7 @@ function initClient() {
 
     authorizeButton.onclick = handleAuthClick;
     signoutButton.onclick = handleSignoutClick;
+    document.querySelector('#loading').remove();
   }).catch(console.log);
 }
 
