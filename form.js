@@ -162,7 +162,7 @@ async function submitForm() {
           }],
           'booleanRule': {
             'condition': {
-              'type': 'TEXT_CONTAINS',
+              'type': 'TEXT_EQ',
               'values': [{
                 "userEnteredValue": answers[i]
               }]
