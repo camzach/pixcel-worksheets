@@ -26,27 +26,6 @@ async function doSubmit() {
   const form = document.querySelector('#form');
   const formData = new FormData(form);
 
-  const questions = formData.getAll('question');
-  const answers = formData.getAll('answer');
-
-  const spreadsheets = gapi.client.sheets.spreadsheets
-
-  const spreadsheetId = (await spreadsheets.create({
-    properties: { title: formData.get('name') }
-  })).result.spreadsheetId;
-
-  const values = [
-    ['Questions', 'Answers'],
-    ...questions.map(q => [q])
-  ];
-
-  await spreadsheets.values.update({
-    spreadsheetId,
-    range: 'A:B',
-    valueInputOption: 'USER_ENTERED',
-    values
-  });
-
   const image = await new Promise((resolve, reject) => {
     const reader = new FileReader();
     const image = new Image();
@@ -74,75 +53,45 @@ async function doSubmit() {
     return all
   }, []);
 
-  const requests = [
-    {
-      deleteDimension: {
-        range: {
-          sheetId: 0,
-          dimension: "ROWS",
-          startIndex: questions.length + 1,
+  const questions = formData.getAll('question');
+  const answers = formData.getAll('answer');
+
+  const spreadsheets = gapi.client.sheets.spreadsheets
+  const spreadsheetId = (await spreadsheets.create({
+    properties: { title: formData.get('name') },
+    sheets: [{
+      properties: {
+        sheetId: 0,
+        gridProperties: {
+          rowCount: Math.max(questions.length + 1, image.height),
+          columnCount: image.width + 3,
         }
-      }
-    },
-    {
-      deleteDimension: {
-        range: {
-          sheetId: 0,
-          dimension: "COLUMNS",
-          startIndex: 3,
-        }
-      }
-    },
-    {
-      "appendDimension": {
-        "sheetId": 0,
-        "dimension": "ROWS",
-        "length": image.height - questions.length - 1
-      }
-    },
-    {
-      "appendDimension": {
-        "sheetId": 0,
-        "dimension": "COLUMNS",
-        "length": image.width
-      }
-    },
-    {
-      "updateDimensionProperties": {
-        "range": {
-          "sheetId": 0,
-          "dimension": "COLUMNS",
-          "startIndex": 3,
-          "endIndex": image.width + 4
-        },
-        "properties": {
-          "pixelSize": 25
-        },
-        "fields": "pixelSize"
-      }
-    },
-    {
-      "updateDimensionProperties": {
-        "range": {
-          "sheetId": 0,
-          "dimension": "ROWS",
-          "startIndex": 0,
-          "endIndex": Math.max(image.height, questions.length) + 1
-        },
-        "properties": {
-          "pixelSize": 25
-        },
-        "fields": "pixelSize"
-      }
-    }
-  ]
-  for (let y = 0; y < image.height; y++) {
-    for (let x = 0; x < image.width; x++) {
-      const qidx = Math.floor(Math.random() * questions.length);
-      const [r, g, b] = colors[y * image.height + x]
-      requests.push({
-        'addConditionalFormatRule': {
-          'rule': {
+      },
+      data: [{
+        rowData: [
+          {
+            values: [
+              { userEnteredValue: { stringValue: 'Questions' } },
+              { userEnteredValue: { stringValue: 'Answers' } },
+            ]
+          },
+          ...questions.map(q => ({
+            values: [{ userEnteredValue: { stringValue: q } }]
+          }))
+        ],
+        rowMetadata: Array(Math.max(questions.length + 1, image.height))
+          .fill({ pixelSize: 25 }),
+      }, {
+        startColumn: 3,
+        columnMetadata: Array(image.width).fill({ pixelSize: 25 }),
+      }],
+      conditionalFormats: [
+        ...Array.from(Array(image.height * image.width), (_, i) => {
+          const qidx = Math.floor(Math.random() * questions.length);
+          const [r, g, b] = colors[i];
+          const y = Math.floor(i / image.width);
+          const x = i % image.height;
+          return {
             'ranges': [{
               'sheetId': 0,
               'startRowIndex': y,
@@ -166,74 +115,58 @@ async function doSubmit() {
                 }
               }
             }
+          }
+        }),
+        ...answers.flatMap((answer, i) => [
+          {
+            'ranges': [{
+              'sheetId': 0,
+              'startRowIndex': i + 1,
+              'endRowIndex': i + 2,
+              'startColumnIndex': 1,
+              'endColumnIndex': 2,
+            }],
+            'booleanRule': {
+              'condition': {
+                'type': 'NOT_BLANK',
+              },
+              'format': {
+                'backgroundColor': {
+                  'red': 255 / 255.0,
+                  'green': 129 / 255.0,
+                  'blue': 129 / 255.0,
+                }
+              }
+            }
           },
-          'index': 0
-        }
-      });
-    }
-  }
-
-  for (let i = 0; i < questions.length; i++) {
-    requests.push(...[{
-      'addConditionalFormatRule': {
-        'rule': {
-          'ranges': [{
-            'sheetId': 0,
-            'startRowIndex': i + 1,
-            'endRowIndex': i + 2,
-            'startColumnIndex': 1,
-            'endColumnIndex': 2,
-          }],
-          'booleanRule': {
-            'condition': {
-              'type': 'TEXT_EQ',
-              'values': [{
-                "userEnteredValue": answers[i]
-              }]
-            },
-            'format': {
-              'backgroundColor': {
-                'red': 186 / 255.0,
-                'green': 240 / 255.0,
-                'blue': 174 / 255.0,
+          {
+            'ranges': [{
+              'sheetId': 0,
+              'startRowIndex': i + 1,
+              'endRowIndex': i + 2,
+              'startColumnIndex': 1,
+              'endColumnIndex': 2,
+            }],
+            'booleanRule': {
+              'condition': {
+                'type': 'TEXT_EQ',
+                'values': [{
+                  "userEnteredValue": answers[i]
+                }]
+              },
+              'format': {
+                'backgroundColor': {
+                  'red': 186 / 255.0,
+                  'green': 240 / 255.0,
+                  'blue': 174 / 255.0,
+                }
               }
             }
           }
-        },
-        'index': 0
-      }
-    }, {
-      'addConditionalFormatRule': {
-        'rule': {
-          'ranges': [{
-            'sheetId': 0,
-            'startRowIndex': i + 1,
-            'endRowIndex': i + 2,
-            'startColumnIndex': 1,
-            'endColumnIndex': 2,
-          }],
-          'booleanRule': {
-            'condition': {
-              'type': 'NOT_BLANK',
-            },
-            'format': {
-              'backgroundColor': {
-                'red': 255 / 255.0,
-                'green': 129 / 255.0,
-                'blue': 129 / 255.0,
-              }
-            }
-          }
-        },
-        'index': 1
-      }
-    }])
-  };
-
-  const q = await spreadsheets.batchUpdate({
-    spreadsheetId,
-    requests
-  });
+        ])
+      ]
+    }]
+  })).result.spreadsheetId;
 }
 
 function addQuestion() {
