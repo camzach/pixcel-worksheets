@@ -4,14 +4,15 @@ async function submitForm() {
   const originalText = submitButton.innerText;
   submitButton.innerText = 'Saving to Google Sheets...';
   try {
-    await doSubmit();
+    const url = await doSubmit();
+    submitButton.innerText = 'Done!';
+    const link = document.body.appendChild(document.createElement('a'));
+    link.href = url;
+    link.innerText = 'See it now!';
     setTimeout(() => {
-      submitButton.innerText = 'Done!';
-      setTimeout(() => {
-        submitButton.disabled = false;
-        submitButton.innerText = originalText;
-      }, 1000);
-    }, 2000);
+      submitButton.disabled = false;
+      submitButton.innerText = originalText;
+    }, 1000);
   } catch (err) {
     submitButton.innerText = 'Error while saving sheet';
     setTimeout(() => {
@@ -57,7 +58,7 @@ async function doSubmit() {
   const answers = formData.getAll('answer');
 
   const spreadsheets = gapi.client.sheets.spreadsheets
-  const spreadsheetId = (await spreadsheets.create({
+  const { spreadsheetId, spreadsheetUrl } = (await spreadsheets.create({
     properties: { title: formData.get('name') },
     sheets: [{
       properties: {
@@ -109,7 +110,9 @@ async function doSubmit() {
         ])
       ]
     }]
-  })).result.spreadsheetId;
+  })).result;
+
+  return spreadsheetUrl
 }
 
 function buildCondionalFormatRule(x, y, condition, color) {
