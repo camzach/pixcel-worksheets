@@ -161,7 +161,7 @@ async function submitForm() {
             'condition': {
               'type': 'TEXT_CONTAINS',
               'values': [{
-                "userEnteredValue": questions[i]
+                "userEnteredValue": answers[i]
               }]
             },
             'format': {
