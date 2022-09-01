@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pixcel Worksheets</title>
+    <meta charset='utf-8' />
+  </head>
+  <body>
+    <p>Create a self-checking pixel art worksheet</p>
+
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize-button" style="display: none;">Sign in with Google</button>
+    <button id="signout-button" style="display: none;">Sign Out</button>
+
+    <form id="form" action="javascript:void(0)" onsubmit="submitForm()">
+      <label>Image File
+        <input type="file" name="image" required />
+      </label>
+      <label>Output Name
+        <input type="text" name="name" required />
+      </label>
+      <label>Questions
+        <textarea name="questions" required></textarea>
+      </label>
+      <label>Answers
+        <textarea name="answers" required></textarea>
+      </label>
+      <label>Output image height
+        <input name="height" type="number"></input>
+      </label>
+      <label>Output image width
+        <input name="width" type="number"></input>
+      </label>
+      <button type="submit">Save to Google Sheets</button>
+    </form>
+
+    <style>
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+    <script src="./submitForm.js"></script>
+    <script src="./googleAuth.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js" 
+      onload="handleClientLoad()"
+    >
+    </script>
+  </body>
+</html>
