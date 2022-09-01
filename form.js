@@ -88,85 +88,50 @@ async function doSubmit() {
       conditionalFormats: [
         ...Array.from(Array(image.height * image.width), (_, i) => {
           const qidx = Math.floor(Math.random() * questions.length);
-          const [r, g, b] = colors[i];
           const y = Math.floor(i / image.width);
           const x = i % image.height;
-          return {
-            'ranges': [{
-              'sheetId': 0,
-              'startRowIndex': y,
-              'endRowIndex': y + 1,
-              'startColumnIndex': x + 3,
-              'endColumnIndex': x + 4,
-            }],
-            'booleanRule': {
-              'condition': {
-                'type': 'CUSTOM_FORMULA',
-                'values': [{
-                  'userEnteredValue':
-                    `=EQ(TO_TEXT(${coordsToA1(2, qidx + 2)}), \"${answers[qidx]}\")`,
-                }]
-              },
-              'format': {
-                'backgroundColor': {
-                  'red': r / 255.0,
-                  'green': g / 255.0,
-                  'blue': b / 255.0,
-                }
-              }
-            }
-          }
+          return buildCondionalFormatRule(x + 3, y, {
+            'type': 'CUSTOM_FORMULA',
+            'values': [{
+              'userEnteredValue':
+                `=EQ(TO_TEXT(${coordsToA1(2, qidx + 2)}), \"${answers[qidx]}\")`,
+            }]
+          }, colors[i]);
         }),
         ...answers.flatMap((answer, i) => [
-          {
-            'ranges': [{
-              'sheetId': 0,
-              'startRowIndex': i + 1,
-              'endRowIndex': i + 2,
-              'startColumnIndex': 1,
-              'endColumnIndex': 2,
-            }],
-            'booleanRule': {
-              'condition': {
-                'type': 'NOT_BLANK',
-              },
-              'format': {
-                'backgroundColor': {
-                  'red': 255 / 255.0,
-                  'green': 129 / 255.0,
-                  'blue': 129 / 255.0,
-                }
-              }
-            }
-          },
-          {
-            'ranges': [{
-              'sheetId': 0,
-              'startRowIndex': i + 1,
-              'endRowIndex': i + 2,
-              'startColumnIndex': 1,
-              'endColumnIndex': 2,
-            }],
-            'booleanRule': {
-              'condition': {
-                'type': 'TEXT_EQ',
-                'values': [{
-                  "userEnteredValue": answers[i]
-                }]
-              },
-              'format': {
-                'backgroundColor': {
-                  'red': 186 / 255.0,
-                  'green': 240 / 255.0,
-                  'blue': 174 / 255.0,
-                }
-              }
-            }
-          }
+          buildCondionalFormatRule(1, i + 1, {type: 'NOT_BLANK'}, [255, 129, 129]),
+          buildCondionalFormatRule(1, i + 1, {
+            'type': 'TEXT_EQ',
+            'values': [{
+              "userEnteredValue": answer
+            }]
+          }, [186, 240, 174])
         ])
       ]
     }]
   })).result.spreadsheetId;
+}
+
+function buildCondionalFormatRule(x, y, condition, color) {
+  return {
+    ranges: [{
+      sheetId: 0,
+      startRowIndex: y,
+      endRowIndex: y + 1,
+      startColumnIndex: x,
+      endColumnIndex: x + 1,
+    }],
+    booleanRule: {
+      condition,
+      format: {
+        backgroundColor: {
+          red: color[0] / 255.0,
+          green: color[1] / 255.0,
+          blue: color[2] / 255.0,
+        }
+      }
+    }
+  }
 }
 
 function addQuestion() {
