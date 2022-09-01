@@ -82,8 +82,8 @@ async function doSubmit() {
         rowMetadata: Array(Math.max(questions.length + 1, image.height))
           .fill({ pixelSize: 25 }),
       }, {
-        startColumn: 3,
-        columnMetadata: Array(image.width).fill({ pixelSize: 25 }),
+        startColumn: 2,
+        columnMetadata: [{ pixelSize: 50 }, ...Array(image.width).fill({ pixelSize: 25 }),]
       }],
       conditionalFormats: [
         ...Array.from(Array(image.height * image.width), (_, i) => {
