@@ -23,20 +23,23 @@ async function submitForm() {
     values
   });
 
-  const image = await new Promise(resolve => {
+  const image = await new Promise((resolve, reject) => {
     const reader = new FileReader();
+    const image = new Image();
     reader.onload = (e) => {
-      const width = formData.get('width');
-      const height = formData.get('height');
-      const image = new Image();
       image.src = e.target.result;
+    }
+    image.onload = () => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      canvas.width = image.width;
-      canvas.height = image.height;
-      ctx.scale(width / image.width, height / image.height);
+      canvas.height = parseInt(formData.get('height')) || image.height;
+      canvas.width = parseInt(formData.get('width')) || image.width;
+      if (canvas.height > 50 || canvas.width > 50) {
+        reject('Image is too large. Try using the height/width settings.')
+      }
+      ctx.scale(canvas.width / image.width, canvas.height / image.height);
       ctx.drawImage(image, 0, 0);
-      const data = ctx.getImageData(0, 0, width, height);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
       resolve(data);
     }
     reader.readAsDataURL(formData.get('image'));
