@@ -5,6 +5,7 @@ var scopes = 'https://www.googleapis.com/auth/spreadsheets';
 
 var authorizeButton = document.getElementById('authorize-button');
 var signoutButton = document.getElementById('signout-button');
+var form = document.getElementById('form');
 
 function handleClientLoad() {
   // Load the API client and auth2 library
@@ -33,9 +34,11 @@ function updateSigninStatus(isSignedIn) {
   if (isSignedIn) {
     authorizeButton.style.display = 'none';
     signoutButton.style.display = 'block';
+    form.hidden = false;
   } else {
     authorizeButton.style.display = 'block';
     signoutButton.style.display = 'none';
+    form.hidden = true;
   }
 }
 

@@ -1,27 +1,15 @@
 async function submitForm() {
-  try {
-    await qrs();
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-async function qrs() {
   const form = document.querySelector('#form');
   const formData = new FormData(form);
-  const formProps = Object.fromEntries(formData);
+
+  const questions = formData.getAll('question');
+  const answers = formData.getAll('answer');
+
   const spreadsheets = gapi.client.sheets.spreadsheets
 
   const spreadsheetId = (await spreadsheets.create({
-    properties: { title: formProps.name }
+    properties: { title: formData.get('name') }
   })).result.spreadsheetId;
-
-  const questions = formProps.questions
-    .replaceAll(/\n+/g, '\n')
-    .split('\n')
-  const answers = formProps.answers
-    .replaceAll(/\n+/g, '\n')
-    .split('\n')
 
   const values = [
     ['Questions', 'Answers'],
@@ -38,25 +26,26 @@ async function qrs() {
   const image = await new Promise(resolve => {
     const reader = new FileReader();
     reader.onload = (e) => {
+      const width = formData.get('width');
+      const height = formData.get('height');
       const image = new Image();
       image.src = e.target.result;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       canvas.width = image.width;
       canvas.height = image.height;
-      ctx.scale(formProps.width / image.width, formProps.height / image.height);
+      ctx.scale(width / image.width, height / image.height);
       ctx.drawImage(image, 0, 0);
-      const data = ctx.getImageData(0, 0, formProps.width, formProps.height);
+      const data = ctx.getImageData(0, 0, width, height);
       resolve(data);
     }
-    reader.readAsDataURL(formProps.image);
+    reader.readAsDataURL(formData.get('image'));
   });
   const colors = image.data.reduce((all, one, i) => {
     const ch = Math.floor(i / 4);
     all[ch] = [].concat((all[ch] || []), one);
     return all
   }, []);
-  console.log(colors);
 
   const requests = [
     {
@@ -158,7 +147,6 @@ async function qrs() {
   }
 
   for (let i = 0; i < questions.length; i++) {
-    console.log(questions[i]);
     requests.push(...[{
       'addConditionalFormatRule': {
         'rule': {
@@ -219,8 +207,35 @@ async function qrs() {
     spreadsheetId,
     requests
   });
-  console.log(q);
+}
 
+function addQuestion() {
+  const questions = document.querySelector('#questionList');
+  const newQuestion = questions.querySelector('li:last-of-type').cloneNode(true);
+  for (el of newQuestion.querySelectorAll('input')) {
+    el.value = '';
+  }
+  const button = newQuestion.querySelector('button')
+  ?? newQuestion.appendChild(document.createElement('button'));
+  button.type="button";
+  button.onclick = () => removeQuestion(newQuestion);
+  button.innerText = 'X';
+  questions.appendChild(newQuestion);
+  if (questions.childElementCount == 2) {
+    const firstQuestion = questions.querySelector('li:first-of-type');
+    const btn = firstQuestion.appendChild(document.createElement('button'));
+    btn.type = 'button';
+    btn.onclick = () => removeQuestion(firstQuestion);
+    btn.innerText = 'X';
+  }
+}
+
+function removeQuestion(q) {
+  q.remove();
+  const questionList = document.querySelector('#questionList');
+  if (questionList.childElementCount == 1) {
+    questionList.querySelector('li button').remove();
+  }
 }
 
 function colIdxToLetter(column) {

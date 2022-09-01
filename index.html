@@ -11,35 +11,50 @@
     <button id="authorize-button" style="display: none;">Sign in with Google</button>
     <button id="signout-button" style="display: none;">Sign Out</button>
 
-    <form id="form" action="javascript:void(0)" onsubmit="submitForm()">
+    <form id="form" action="javascript:void(0)" onsubmit="submitForm()" hidden>
       <label>Image File
         <input type="file" name="image" required />
       </label>
       <label>Output Name
         <input type="text" name="name" required />
       </label>
-      <label>Questions
-        <textarea name="questions" required></textarea>
-      </label>
-      <label>Answers
-        <textarea name="answers" required></textarea>
-      </label>
-      <label>Output image height
-        <input name="height" type="number"></input>
-      </label>
-      <label>Output image width
-        <input name="width" type="number"></input>
-      </label>
+      <fieldset>
+        <ol id="questionList">
+          <li>
+            <input type="text" name="question" required>
+            <input type="text" name="answer" required>
+          </li>
+        </ol>
+        <button type="button" onclick="addQuestion()">Add Question</button>
+      </fieldset>
+      <fieldset>
+        Optional fields. If these are omitted, the generated worksheet will have the dimensions of the original image.
+        <label>Output image height
+          <input name="height" type="number"></input>
+        </label>
+        <label>Output image width
+          <input name="width" type="number"></input>
+        </label>
+      </fieldset>
       <button type="submit">Save to Google Sheets</button>
     </form>
 
     <style>
+      [hidden] {
+        display: none
+      }
       form {
         display: flex;
         flex-direction: column;
+        gap: .5em;
+      }
+      fieldset {
+        display: flex;
+        flex-direction: column;
+        gap: .5em;
       }
     </style>
-    <script src="./submitForm.js"></script>
+    <script src="./form.js"></script>
     <script src="./googleAuth.js"></script>
     <script async defer src="https://apis.google.com/js/api.js" 
       onload="handleClientLoad()"
