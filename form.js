@@ -100,7 +100,7 @@ async function doSubmit() {
           }, colors[i]);
         }),
         ...answers.flatMap((answer, i) => [
-          buildCondionalFormatRule(1, i + 1, {type: 'NOT_BLANK'}, [255, 129, 129]),
+          buildCondionalFormatRule(1, i + 1, { type: 'NOT_BLANK' }, [255, 129, 129]),
           buildCondionalFormatRule(1, i + 1, {
             'type': 'TEXT_EQ',
             'values': [{
@@ -138,29 +138,25 @@ function buildCondionalFormatRule(x, y, condition, color) {
 }
 
 function addQuestion() {
-  const questions = document.querySelector('#questionList');
-  const newQuestion = questions.querySelector('li:last-of-type').cloneNode(true);
-  for (el of newQuestion.querySelectorAll('input')) {
-    el.value = '';
-  }
-  const button = newQuestion.querySelector('button')
-  ?? newQuestion.appendChild(document.createElement('button'));
-  button.type="button";
-  button.onclick = () => removeQuestion(newQuestion);
-  button.innerText = 'X';
-  questions.appendChild(newQuestion);
-  if (questions.childElementCount == 2) {
+  const questions = document.querySelector('#question-list');
+  if (questions.childElementCount == 1) {
     const firstQuestion = questions.querySelector('li:first-of-type');
-    const btn = firstQuestion.appendChild(document.createElement('button'));
+    const btn = firstQuestion.insertBefore(document.createElement('button'), firstQuestion.querySelector('img'));
     btn.type = 'button';
     btn.onclick = () => removeQuestion(firstQuestion);
     btn.innerText = 'X';
   }
+  const newQuestion = questions.querySelector('li:last-of-type').cloneNode(true);
+  for (el of newQuestion.querySelectorAll('input,textarea')) {
+    el.value = '';
+  }
+  questions.appendChild(newQuestion);
+  newQuestion.querySelector('button').onclick = () => removeQuestion(newQuestion);
 }
 
 function removeQuestion(q) {
   q.remove();
-  const questionList = document.querySelector('#questionList');
+  const questionList = document.querySelector('#question-list');
   if (questionList.childElementCount == 1) {
     questionList.querySelector('li button').remove();
   }
@@ -179,3 +175,6 @@ function colIdxToLetter(column) {
 function coordsToA1(x, y) {
   return `${colIdxToLetter(x)}${y}`;
 }
+
+// Enable dragging
+dragula([document.getElementById('question-list')]);

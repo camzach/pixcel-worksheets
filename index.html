@@ -20,12 +20,14 @@
         <input type="text" name="name" required />
       </label>
       <fieldset>
-        <ol id="questionList">
+        <ol id="question-list">
           <li>
-            <input type="text" name="question" required>
-            <input type="text" name="answer" required>
+            <input type="text" name="question" required />
+            <input type="text" name="answer" required />
+            <img src="./arrow.svg" />
           </li>
         </ol>
+        Questions can be reordered by drag and drop
         <button type="button" onclick="addQuestion()">Add Question</button>
       </fieldset>
       <fieldset>
@@ -39,7 +41,6 @@
       </fieldset>
       <button type="submit" id="submit-button">Save to Google Sheets</button>
     </form>
-
     <style>
       [hidden] {
         display: none
@@ -55,11 +56,12 @@
         gap: .5em;
       }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.js" integrity="sha512-MrA7WH8h42LMq8GWxQGmWjrtalBjrfIzCQ+i2EZA26cZ7OBiBd/Uct5S3NP9IBqKx5b+MMNH1PhzTsk6J9nPQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.css" integrity="sha512-49xW99xceMN8dDoWaoCaXvuVMjnUctHv/jOlZxzFSMJYhqDZmSF/UnM6pLJjQu0YEBLSdO1DP0er6rUdm8/VqA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="./form.js"></script>
     <script src="./googleAuth.js"></script>
     <script async defer src="https://apis.google.com/js/api.js" 
       onload="handleClientLoad()"
-    >
-    </script>
+    ></script>
   </body>
 </html>
