@@ -1,67 +1,74 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Pixcel Worksheets</title>
-    <meta charset='utf-8' />
-  </head>
-  <body>
-    <p>Create a self-checking pixel art worksheet</p>
 
-    <p id="loading">Loading...</p>
+<head>
+  <title>Pixcel Worksheets</title>
+  <meta charset='utf-8' />
+</head>
 
-    <button id="authorize-button" style="display: none;">Sign in with Google</button>
-    <button id="signout-button" style="display: none;">Sign Out</button>
+<body>
+  <p>Create a self-checking pixel art worksheet</p>
 
-    <form id="form" action="javascript:void(0)" onsubmit="submitForm()" hidden>
-      <label>Image File
-        <input type="file" name="image" required />
+  <p id="loading">Loading...</p>
+
+  <button id="authorize-button" style="display: none;">Sign in with Google</button>
+  <button id="signout-button" style="display: none;">Sign Out</button>
+
+  <form id="form" action="javascript:void(0)" onsubmit="submitForm()" hidden>
+    <label>Image File
+      <input type="file" name="image" required />
+    </label>
+    <label>Output Name
+      <input type="text" name="name" required />
+    </label>
+    <fieldset>
+      <ol id="question-list">
+        <li>
+          <input type="text" name="question" required />
+          <input type="text" name="answer" required />
+          <img src="./arrow.svg" />
+        </li>
+      </ol>
+      Questions can be reordered by drag and drop
+      <button type="button" onclick="addQuestion()">Add Question</button>
+    </fieldset>
+    <fieldset>
+      Optional fields. If these are omitted, the generated worksheet will have the dimensions of the original image.
+      <label>Output image height
+        <input name="height" type="number"></input>
       </label>
-      <label>Output Name
-        <input type="text" name="name" required />
+      <label>Output image width
+        <input name="width" type="number"></input>
       </label>
-      <fieldset>
-        <ol id="question-list">
-          <li>
-            <input type="text" name="question" required />
-            <input type="text" name="answer" required />
-            <img src="./arrow.svg" />
-          </li>
-        </ol>
-        Questions can be reordered by drag and drop
-        <button type="button" onclick="addQuestion()">Add Question</button>
-      </fieldset>
-      <fieldset>
-        Optional fields. If these are omitted, the generated worksheet will have the dimensions of the original image.
-        <label>Output image height
-          <input name="height" type="number"></input>
-        </label>
-        <label>Output image width
-          <input name="width" type="number"></input>
-        </label>
-      </fieldset>
-      <button type="submit" id="submit-button">Save to Google Sheets</button>
-    </form>
-    <style>
-      [hidden] {
-        display: none
-      }
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: .5em;
-      }
-      fieldset {
-        display: flex;
-        flex-direction: column;
-        gap: .5em;
-      }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.js" integrity="sha512-MrA7WH8h42LMq8GWxQGmWjrtalBjrfIzCQ+i2EZA26cZ7OBiBd/Uct5S3NP9IBqKx5b+MMNH1PhzTsk6J9nPQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.css" integrity="sha512-49xW99xceMN8dDoWaoCaXvuVMjnUctHv/jOlZxzFSMJYhqDZmSF/UnM6pLJjQu0YEBLSdO1DP0er6rUdm8/VqA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="./form.js"></script>
-    <script src="./googleAuth.js"></script>
-    <script async defer src="https://apis.google.com/js/api.js" 
-      onload="handleClientLoad()"
-    ></script>
-  </body>
+    </fieldset>
+    <button type="submit" id="submit-button">Save to Google Sheets</button>
+  </form>
+  <style>
+    [hidden] {
+      display: none
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: .5em;
+    }
+
+    fieldset {
+      display: flex;
+      flex-direction: column;
+      gap: .5em;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.js"
+    integrity="sha512-MrA7WH8h42LMq8GWxQGmWjrtalBjrfIzCQ+i2EZA26cZ7OBiBd/Uct5S3NP9IBqKx5b+MMNH1PhzTsk6J9nPQQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.css"
+    integrity="sha512-49xW99xceMN8dDoWaoCaXvuVMjnUctHv/jOlZxzFSMJYhqDZmSF/UnM6pLJjQu0YEBLSdO1DP0er6rUdm8/VqA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="./form.js"></script>
+  <script src="./googleAuth.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js" onload="handleClientLoad()"></script>
+</body>
+
 </html>

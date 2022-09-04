@@ -14,10 +14,10 @@ function handleClientLoad() {
 
 function initClient() {
   gapi.client.init({
-      apiKey: apiKey,
-      discoveryDocs: discoveryDocs,
-      clientId: clientId,
-      scope: scopes
+    apiKey: apiKey,
+    discoveryDocs: discoveryDocs,
+    clientId: clientId,
+    scope: scopes
   }).then(function () {
     // Listen for sign-in state changes.
     gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
