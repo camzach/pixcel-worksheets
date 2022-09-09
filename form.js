@@ -99,7 +99,7 @@ async function doSubmit() {
         ...Array.from(Array(image.height * image.width), (_, i) => {
           const qidx = Math.floor(Math.random() * questions.length);
           const y = Math.floor(i / image.width);
-          const x = i % image.height;
+          const x = i % image.width;
           return buildCondionalFormatRule(x + 3, y, {
             type: 'CUSTOM_FORMULA',
             values: [{
