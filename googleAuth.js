@@ -1,7 +1,7 @@
 var apiKey = 'AIzaSyCUcQ4n8mNjGdipXjXIDOa5sE7CMvMMjIU';
 var discoveryDocs = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
 var clientId = '741031859741-qp5hat9nd1narovtmeevdjpmpm0pkpme.apps.googleusercontent.com';
-var scopes = 'https://www.googleapis.com/auth/spreadsheets';
+var scopes = 'https://www.googleapis.com/auth/drive.file';
 
 var authorizeButton = document.getElementById('authorize-button');
 var signoutButton = document.getElementById('signout-button');
