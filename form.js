@@ -55,7 +55,15 @@ async function doSubmit() {
   }, []);
 
   const questions = formData.getAll('question');
-  const answers = formData.getAll('answer');
+  const answers = formData.get('useHash') ?
+    await Promise.all(formData.getAll('answer').map(ans =>
+      fetch('https://api.hashify.net/hash/md5/hex?' + new URLSearchParams({ value: ans }))
+      .then(ans => ans.json())
+          .then(ans => ans.Digest)
+      )) :
+    formData.getAll('answer');
+
+  console.log(formData.get('useHash'));
 
   const spreadsheets = gapi.client.sheets.spreadsheets
   const { spreadsheetId, spreadsheetUrl } = (await spreadsheets.create({
@@ -63,6 +71,7 @@ async function doSubmit() {
     sheets: [{
       properties: {
         sheetId: 0,
+        title: 'Worksheet',
         gridProperties: {
           rowCount: Math.max(questions.length + 1, image.height),
           columnCount: image.width + 3,
@@ -92,9 +101,10 @@ async function doSubmit() {
           const y = Math.floor(i / image.width);
           const x = i % image.height;
           return buildCondionalFormatRule(x + 3, y, {
-            'type': 'CUSTOM_FORMULA',
-            'values': [{
-              'userEnteredValue':
+            type: 'CUSTOM_FORMULA',
+            values: [{
+              userEnteredValue: formData.get('useHash') ?
+                `=EQ(TO_TEXT(INDIRECT("Hashes!${coordsToA1(1, qidx + 1)}")), \"${answers[qidx]}\")` :
                 `=EQ(TO_TEXT(${coordsToA1(2, qidx + 2)}), \"${answers[qidx]}\")`,
             }]
           }, colors[i]);
@@ -102,14 +112,37 @@ async function doSubmit() {
         ...answers.flatMap((answer, i) => [
           buildCondionalFormatRule(1, i + 1, { type: 'NOT_BLANK' }, [255, 129, 129]),
           buildCondionalFormatRule(1, i + 1, {
-            'type': 'TEXT_EQ',
-            'values': [{
-              "userEnteredValue": answer
+            type: formData.get('useHash') ?
+              'CUSTOM_FORMULA' :
+              'TEXT_EQ',
+            values: [{
+              userEnteredValue:
+                formData.get('useHash') ?
+                  `=EQ(TO_TEXT(INDIRECT("Hashes!${coordsToA1(1, i + 1)}")), \"${answer}\")` :
+                  answer,
             }]
           }, [186, 240, 174])
         ])
       ]
-    }]
+    },
+    ...(formData.get('useHash') ? [{
+      properties: {
+        sheetId: 1,
+        title: 'Hashes',
+        hidden: true
+      },
+      data: [{
+        rowData: [
+          ...answers.map((_, idx) => ({
+            values: [{
+              userEnteredValue: {
+                formulaValue: `=REGEXEXTRACT(IMPORTDATA("https://api.hashify.net/hash/md5/hex?value="&Worksheet!${coordsToA1(2, idx + 2)}),"Digest"&CHAR(34)&":"&CHAR(34)&"(.*)"&CHAR(34))`
+              }
+            }]
+          }))
+        ],
+      }]
+    }] : [])]
   })).result;
 
   return spreadsheetUrl

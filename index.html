@@ -33,12 +33,19 @@
       <button type="button" onclick="addQuestion()">Add Question</button>
     </fieldset>
     <fieldset>
-      Optional fields. If these are omitted, the generated worksheet will have the dimensions of the original image.
-      <label>Output image height
-        <input name="height" type="number"></input>
-      </label>
-      <label>Output image width
-        <input name="width" type="number"></input>
+      Optional fields.
+      <fieldset>
+        Limit the height and width of the resulting image. If these are omitted, the generated worksheet will have the dimensions of the original image.
+        <label>Output image height
+          <input name="height" type="number"></input>
+        </label>
+        <label>Output image width
+          <input name="width" type="number"></input>
+        </label>
+      </fieldset>
+      <label>
+        <input type="checkbox" name="useHash" />
+        Hide answers behind MD5 hash (prevents nosy students from finding answers in the conditional formatting rules, but will slow the worksheet considerably)
       </label>
     </fieldset>
     <button type="submit" id="submit-button">Save to Google Sheets</button>
