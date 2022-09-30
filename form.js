@@ -86,7 +86,7 @@ async function doSubmit() {
             ]
           },
           ...questions.map(q => ({
-            values: [{ userEnteredValue: { stringValue: q } }]
+            values: [{ userEnteredValue: { stringValue: q }, formattedValue: q }, { userEnteredFormat: { numberFormat: { type: 'TEXT' } } }]
           }))
         ],
         rowMetadata: Array(Math.max(questions.length + 1, image.height))
